@@ -1,10 +1,10 @@
 {
-  "name": "react-boilerplate",
-  "version": "4.0.0",
-  "description": "A highly scalable, offline-first foundation with the best DX and a focus on performance and best practices",
+  "name": "taskit",
+  "version": "0.1.0",
+  "description": "A sensible personal task manager.",
   "repository": {
     "type": "git",
-    "url": "git://github.com/react-boilerplate/react-boilerplate.git"
+    "url": "git://github.com/saurabhgupta2u/taskit.git"
   },
   "engines": {
     "npm": ">=5",
