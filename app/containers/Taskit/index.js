@@ -22,7 +22,8 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 
 import PriorityList from 'components/PriorityList';
 
@@ -43,6 +44,41 @@ export function Taskit(props) {
   useInjectSaga({ key: 'taskit', saga });
 
   const classes = useStyles();
+  const [value, setValue] = React.useState(0);
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+  const priorityTabs = (
+    Object.keys(props.priorities)
+      .sort()
+      .map(
+        priority => (
+          <Tab
+            key={`ptab_${props.priorities[priority]}`}
+            label={props.priorities[priority]}
+          />
+        )
+      )
+  );
+
+  const priorityLists = (
+    Object.keys(props.priorities)
+      .sort()
+      .map(
+        priority => (
+          <PriorityList
+            key={`plist_${props.priorities[priority]}`}
+            value={value}
+            index={Number(priority)}
+            priority={Number(priority)}
+            priorities={props.priorities}
+            tasks={props.tasks}
+          />
+        )
+      )
+  );
+
+
   return (
     <div className={classes.root}>
       <AppBar position="static">
@@ -60,40 +96,30 @@ export function Taskit(props) {
           </Typography>
         </Toolbar>
       </AppBar>
-      <Grid item xs={12} sm={6}>
-        <PriorityList
-          priority={4}
-          priorityMap={props.priorityMap}
-          tasks={props.tasks}
-        />
-        <PriorityList
-          priority={3}
-          priorityMap={props.priorityMap}
-          tasks={props.tasks}
-        />
-        <PriorityList
-          priority={2}
-          priorityMap={props.priorityMap}
-          tasks={props.tasks}
-        />
-        <PriorityList
-          priority={1}
-          priorityMap={props.priorityMap}
-          tasks={props.tasks}
-        />
-      </Grid>
+      <Tabs
+        orientation="vertical"
+        variant="scrollable"
+        value={value}
+        onChange={handleChange}
+        className={classes.tabs}
+        indicatorColor="primary"
+        textColor="primary"
+      >
+        {priorityTabs}
+      </Tabs>
+      {priorityLists}
     </div>
   );
 }
 
 Taskit.propTypes = {
   tasks: PropTypes.array.isRequired,
-  priorityMap: PropTypes.object.isRequired,
+  priorities: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
   tasks: makeSelectTasks(),
-  priorityMap: makeSelectPriorities(),
+  priorities: makeSelectPriorities(),
 });
 
 function mapDispatchToProps(dispatch) {

@@ -6,117 +6,139 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
 import MaterialTable from 'material-table';
+import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-function PriorityList(props) {
-  return (
-    <MaterialTable
-      title={props.priorityMap[props.priority]}
-      editable={{
-        isEditable: rowData => rowData.name === 'task',
-        isDeletable: true,
-        onRowAdd: newData =>
-          new Promise((resolve, reject) => {
-            setTimeout(() => {
-              {
-                /* const data = this.state.data;
-                data.push(newData);
-                this.setState({ data }, () => resolve()); */
-              }
-              resolve();
-            }, 1000);
-          }),
-        onRowUpdate: (newData, oldData) =>
-          new Promise((resolve, reject) => {
-            setTimeout(() => {
-              {
-                /* const data = this.state.data;
-                const index = data.indexOf(oldData);
-                data[index] = newData;
-                this.setState({ data }, () => resolve()); */
-              }
-              resolve();
-            }, 1000);
-          }),
-        onRowDelete: oldData =>
-          new Promise((resolve, reject) => {
-            setTimeout(() => {
-              {
-                /* let data = this.state.data;
-                const index = data.indexOf(oldData);
-                data.splice(index, 1);
-                this.setState({ data }, () => resolve()); */
-              }
-              resolve();
-            }, 1000);
-          }),
-      }}
-      columns={[
-        { title: 'Status', field: 'status', type: 'boolean' },
-        { title: 'Task', field: 'task', type: 'string' },
-        { title: 'Age', field: 'timestamp', type: 'datetime' },
-      ]}
-      data={props.tasks}
-      actions={[
-        {
-          icon: <FontAwesomeIcon icon={['fab', 'plus-circle']} />,
-          tooltip: 'Add Task',
-          isFreeAction: true,
-          onClick: (event) => alert("You want to add a new task")
-        },
-        {
-          icon: <FontAwesomeIcon icon={['fab', 'arrow-circle-up']} />,
-          tooltip: 'Promote Task',
-          isFreeAction: true,
-          onClick: (event) => alert("You want to promote task")
-        },
-        {
-          icon: <FontAwesomeIcon icon={['fab', 'arrow-circle-down']} />,
-          tooltip: 'Demote Task',
-          isFreeAction: true,
-          onClick: (event) => alert("You want to demote task")
-        },
-        {
-          icon: <FontAwesomeIcon icon={['fab', 'check-circle']} />,
-          tooltip: 'Mark Task as Complete',
-          isFreeAction: true,
-          onClick: (event) => alert("You want to demote task")
-        },
-        {
-          icon: <FontAwesomeIcon icon={['fab', 'times-circle']} />,
-          tooltip: 'Mark Task as Pending',
-          isFreeAction: true,
-          onClick: (event) => alert("You want to demote task")
-        },
-        {
-          icon: <FontAwesomeIcon icon={['fab', 'edit']} />,
-          tooltip: 'Edit Task',
-          isFreeAction: false,
-          onClick: (event) => alert("You want to demote task")
-        },
-        {
-          icon: <FontAwesomeIcon icon={['fab', 'trash-alt']} />,
-          tooltip: 'Delete Task',
-          isFreeAction: false,
-          onClick: (event) => alert("You want to demote task")
-        },
-      ]}
-      options={{
-        sorting: true,
-        filtering: true,
-        selection: true,
-        search: true,
-      }}
-    />
-  );
-}
+class PriorityList extends React.Component {
+  static propTypes = {
+    priorities: PropTypes.object.isRequired,
+    priority: PropTypes.number.isRequired,
+    tasks: PropTypes.array.isRequired,
+  };
 
-PriorityList.propTypes = {
-  priorityMap: PropTypes.object.isRequired,
-  priority: PropTypes.number.isRequired,
-  tasks: PropTypes.array.isRequired,
-};
+  constructor(props) {
+    super(props);
+    this.state = {};
+    this.icons = {
+      Add: () => <FontAwesomeIcon icon={['fas', 'plus-circle']} />,
+      Edit: () => <FontAwesomeIcon icon={['fas', 'edit']} />,
+      Delete: () => <FontAwesomeIcon icon={['fas', 'trash']} />,
+      Check: () => <FontAwesomeIcon icon={['fas', 'check-circle']} />,
+      Promote: () => <FontAwesomeIcon icon={['fas', 'arrow-circle-up']} />,
+      Demote: () => <FontAwesomeIcon icon={['fas', 'arrow-circle-down']} />,
+      Uncheck: () => <FontAwesomeIcon icon={['fas', 'times-circle']} />,
+    };
+  }
+
+  render() {
+    return (
+      <MaterialTable
+        title={this.props.priorities[this.props.priority]}
+        style={{
+          fontSize: 10,
+        }}
+        icons={this.icons}
+        columns={[
+          {
+            title: 'Task',
+            field: 'task',
+            type: 'string',
+            initialEditValue: '',
+            searchable: true,
+          },
+          {
+            title: 'Age',
+            field: 'timestamp',
+            type: 'datetime',
+            editable: 'never',
+            filtering: false,
+            readonly: true,
+            render: rowData => moment(rowData.timestamp).fromNow(true),
+          },
+        ]}
+        data={this.props.tasks}
+        editable={{
+          onRowAdd: newData =>
+            new Promise((resolve, reject) => {
+              setTimeout(() => {
+                {
+                  const { data } = this.state;
+                  data.push(newData);
+                  this.setState({ data }, () => resolve());
+                }
+                resolve();
+              }, 1000);
+            }),
+          onRowUpdate: (newData, oldData) =>
+            new Promise((resolve, reject) => {
+              setTimeout(() => {
+                {
+                  const { data } = this.state;
+                  const index = data.indexOf(oldData);
+                  data[index] = newData;
+                  this.setState({ data }, () => resolve());
+                }
+                resolve();
+              }, 1000);
+            }),
+          onRowDelete: oldData =>
+            new Promise((resolve, reject) => {
+              setTimeout(() => {
+                {
+                  const { data } = this.state;
+                  const index = data.indexOf(oldData);
+                  data.splice(index, 1);
+                  this.setState({ data }, () => resolve());
+                }
+                resolve();
+              }, 1000);
+            }),
+        }}
+        actions={[
+          {
+            icon: this.icons.Promote,
+            tooltip: 'Promote Task',
+            isFreeAction: false,
+            onClick: event => alert('You want to promote task'),
+          },
+          {
+            icon: this.icons.Demote,
+            tooltip: 'Demote Task',
+            isFreeAction: false,
+            onClick: event => alert('You want to demote task'),
+          },
+          {
+            icon: this.icons.Check,
+            tooltip: 'Mark Task as Complete',
+            isFreeAction: false,
+            onClick: event => alert('You want to mark task as complete'),
+          },
+          {
+            icon: this.icons.Uncheck,
+            tooltip: 'Mark Task as Pending',
+            isFreeAction: false,
+            onClick: event => alert('You want to mark task as pending'),
+          },
+          {
+            icon: this.icons.Delete,
+            tooltip: 'Delete Task',
+            isFreeAction: false,
+            onClick: event => alert('You want to delete task'),
+          },
+        ]}
+        options={{
+          sorting: true,
+          filtering: true,
+          selection: true,
+          search: true,
+          rowStyle: {
+            fontSize: 8,
+          },
+        }}
+      />
+    );
+  }
+}
 
 export default PriorityList;

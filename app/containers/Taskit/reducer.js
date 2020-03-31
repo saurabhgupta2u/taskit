@@ -10,9 +10,9 @@ import { DEFAULT_ACTION } from './constants';
 export const initialState = {
   priorities: {
     1: 'Today',
-    2: "Tomorrow",
-    3: "Later",
-    4: "Someday",
+    2: 'Tomorrow',
+    3: 'Later',
+    4: 'Someday',
   },
   tasks: [
     { status: false, task: 'Task 1', timestamp: moment.now(), priority: 1 },
