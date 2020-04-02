@@ -12,9 +12,6 @@ import { compose } from 'redux';
 
 import { useInjectSaga } from 'utils/injectSaga';
 import { useInjectReducer } from 'utils/injectReducer';
-import { makeSelectTasks, makeSelectPriorities } from './selectors';
-import reducer from './reducer';
-import saga from './saga';
 
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -24,8 +21,12 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import Paper from '@material-ui/core/Paper';
 
 import PriorityList from 'components/PriorityList';
+import saga from './saga';
+import reducer from './reducer';
+import { makeSelectTasks, makeSelectPriorities } from './selectors';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -33,6 +34,14 @@ const useStyles = makeStyles(theme => ({
   },
   menuButton: {
     marginRight: theme.spacing(2),
+  },
+  background: {
+    display: 'flex',
+    '& > *': {
+      margin: theme.spacing(1),
+      width: theme.spacing(16),
+      height: theme.spacing(16),
+    },
   },
   title: {
     flexGrow: 1,
@@ -48,36 +57,27 @@ export function Taskit(props) {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  const priorityTabs = (
-    Object.keys(props.priorities)
-      .sort()
-      .map(
-        priority => (
-          <Tab
-            key={`ptab_${props.priorities[priority]}`}
-            label={props.priorities[priority]}
-          />
-        )
-      )
-  );
+  const priorityTabs = Object.keys(props.priorities)
+    .sort()
+    .map(priority => (
+      <Tab
+        key={`ptab_${props.priorities[priority]}`}
+        label={props.priorities[priority]}
+      />
+    ));
 
-  const priorityLists = (
-    Object.keys(props.priorities)
-      .sort()
-      .map(
-        priority => (
-          <PriorityList
-            key={`plist_${props.priorities[priority]}`}
-            value={value}
-            index={Number(priority)}
-            priority={Number(priority)}
-            priorities={props.priorities}
-            tasks={props.tasks}
-          />
-        )
-      )
-  );
-
+  const priorityLists = Object.keys(props.priorities)
+    .sort()
+    .map(priority => (
+      <PriorityList
+        key={`plist_${props.priorities[priority]}`}
+        value={value}
+        index={Number(priority)}
+        priority={Number(priority)}
+        priorities={props.priorities}
+        tasks={props.tasks}
+      />
+    ));
 
   return (
     <div className={classes.root}>
@@ -96,18 +96,20 @@ export function Taskit(props) {
           </Typography>
         </Toolbar>
       </AppBar>
-      <Tabs
-        orientation="vertical"
-        variant="scrollable"
-        value={value}
-        onChange={handleChange}
-        className={classes.tabs}
-        indicatorColor="primary"
-        textColor="primary"
-      >
-        {priorityTabs}
-      </Tabs>
-      {priorityLists}
+      <Paper variant="outlined" square>
+        <Tabs
+          orientation="vertical"
+          variant="scrollable"
+          value={value}
+          onChange={handleChange}
+          className={classes.tabs}
+          indicatorColor="primary"
+          textColor="primary"
+        >
+          {priorityTabs}
+          {priorityLists}
+        </Tabs>
+      </Paper>
     </div>
   );
 }

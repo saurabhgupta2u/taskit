@@ -19,7 +19,9 @@ class PriorityList extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      selectedRow: null,
+    };
     this.icons = {
       Add: () => <FontAwesomeIcon icon={['fas', 'plus-circle']} />,
       Edit: () => <FontAwesomeIcon icon={['fas', 'edit']} />,
@@ -28,6 +30,16 @@ class PriorityList extends React.Component {
       Promote: () => <FontAwesomeIcon icon={['fas', 'arrow-circle-up']} />,
       Demote: () => <FontAwesomeIcon icon={['fas', 'arrow-circle-down']} />,
       Uncheck: () => <FontAwesomeIcon icon={['fas', 'times-circle']} />,
+      Clear: () => <FontAwesomeIcon icon={['fas', 'times']} />,
+      Cancel: () => <FontAwesomeIcon icon={['fas', 'times']} />,
+      ResetSearch: () => <FontAwesomeIcon icon={['fas', 'times']} />,
+      Search: () => <FontAwesomeIcon icon={['fas', 'search']} />,
+      Filter: () => <FontAwesomeIcon icon={['fas', 'filter']} />,
+      SortArrow: () => <FontAwesomeIcon icon={['fas', 'sort']} />,
+      FirstPage: () => <FontAwesomeIcon icon={['fas', 'fast-backward']} />,
+      LastPage: () => <FontAwesomeIcon icon={['fas', 'fast-forward']} />,
+      NextPage: () => <FontAwesomeIcon icon={['fas', 'step-forward']} />,
+      PreviousPage: () => <FontAwesomeIcon icon={['fas', 'step-backward']} />,
     };
   }
 
@@ -57,7 +69,9 @@ class PriorityList extends React.Component {
             render: rowData => moment(rowData.timestamp).fromNow(true),
           },
         ]}
-        data={this.props.tasks}
+        data={this.props.tasks.filter(
+          rowData => rowData.priority === this.props.priority,
+        )}
         editable={{
           onRowAdd: newData =>
             new Promise((resolve, reject) => {
@@ -95,6 +109,7 @@ class PriorityList extends React.Component {
               }, 1000);
             }),
         }}
+        onRowSelected={(evt, selectedRow) => this.setState({ selectedRow })}
         actions={[
           {
             icon: this.icons.Promote,
@@ -132,8 +147,21 @@ class PriorityList extends React.Component {
           filtering: true,
           selection: true,
           search: true,
-          rowStyle: {
-            fontSize: 8,
+          cellStyle: {
+            fontSize: 12,
+            color: 'black',
+          },
+          rowStyle: rowData => ({
+            backgroundColor:
+              this.state.selectedRow &&
+              this.state.selectedRow.tableData.id === rowData.tableData.id
+                ? 'silver'
+                : 'none',
+          }),
+          headerStyle: {
+            fontSize: 16,
+            backgroundColor: 'none',
+            color: 'darkGray',
           },
         }}
       />
